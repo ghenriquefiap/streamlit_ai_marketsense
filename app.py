@@ -8,7 +8,7 @@ import pandas as pd
 # ==========================================
 # CONSTANTES E CONFIGURAÇÕES GERAIS
 # ==========================================
-LANGFLOW_API_URL = "https://gushenrique-ai-marketsense-playground.hf.space/api/v1/run/960f88d4-8587-49eb-8aa8-ac859dcb0ce6"
+LANGFLOW_API_URL = "https://gushenrique-ai-marketsense-playground.hf.space/flow/1f2a3917-dfc3-4372-ae73-9fc30d62e429"
 API_KEY = os.environ.get("LANGFLOW_API_KEY")
 
 # Usar um Set {} em vez de Lista [] deixa a busca O(1) - instantânea
