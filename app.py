@@ -96,30 +96,28 @@ if prompt := st.chat_input("Ex: Quantas empresas ativas temos em Joinville?"):
         st.markdown(prompt)
         
     with st.chat_message("assistant"):
-        message_placeholder = st.empty()
         
         # Interceptador de Small Talk
         if prompt.lower().strip() in SAUDACOES:
             resposta_ia = "Olá! Sou o AI MarketSense, seu Especialista em Inteligência de Mercado. Estou conectado aos dados estruturados da Receita Federal com foco em Santa Catarina. Como posso ajudar você a analisar nossos cenários hoje?"
-            message_placeholder.markdown(resposta_ia)
+            st.markdown(resposta_ia)
             st.session_state.messages.append({"role": "assistant", "content": resposta_ia})
             
         else:
-            message_placeholder.markdown("⏳ Processando dados estruturados...")
-            
-            try:
-                resposta_ia = consultar_langflow(prompt, st.session_state.session_id)
-                message_placeholder.empty()
-                
-                if not resposta_ia or resposta_ia.strip() == "":
-                    st.error("⚠️ O Langflow processou a requisição, mas retornou um texto vazio via API.")
-                else:
-                    renderizar_mensagem(resposta_ia)
-                    st.session_state.messages.append({"role": "assistant", "content": resposta_ia})
+            # === O SPINNER MÁGICO ENTRA AQUI ===
+            with st.spinner('🤖 Analisando milhões de dados da Receita Federal... Isso pode levar alguns segundos.'):
+                try:
+                    resposta_ia = consultar_langflow(prompt, st.session_state.session_id)
                     
-            except requests.exceptions.Timeout:
-                message_placeholder.error("⏳ Tempo limite excedido. O banco de dados demorou mais de 90 segundos.")
-            except requests.exceptions.RequestException as e:
-                message_placeholder.error(f"⚠️ Erro ao conectar com a API: {e}")
-            except (ValueError, KeyError) as e:
-                message_placeholder.error(f"⚠️ A estrutura da resposta da API mudou. Erro: {e}")
+                    if not resposta_ia or resposta_ia.strip() == "":
+                        st.error("⚠️ O Langflow processou a requisição, mas retornou um texto vazio via API.")
+                    else:
+                        renderizar_mensagem(resposta_ia)
+                        st.session_state.messages.append({"role": "assistant", "content": resposta_ia})
+                        
+                except requests.exceptions.Timeout:
+                    st.error("⏳ Tempo limite excedido. O banco de dados demorou mais de 90 segundos.")
+                except requests.exceptions.RequestException as e:
+                    st.error(f"⚠️ Erro ao conectar com a API: {e}")
+                except (ValueError, KeyError) as e:
+                    st.error(f"⚠️ A estrutura da resposta da API mudou. Erro: {e}")
