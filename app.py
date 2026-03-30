@@ -22,14 +22,15 @@ st.markdown("Assistente de Inteligência de Mercado para Branding com Dados Púb
 # FUNÇÕES DE LÓGICA E RENDERIZAÇÃO
 # ==========================================
 def renderizar_mensagem(conteudo):
-    """Separa o texto da IA do payload do gráfico e renderiza ambos na tela."""
+    """Separa o texto da IA do payload do gráfico e renderiza com botões de ação."""
     if "[GRAFICO]" not in conteudo:
         st.markdown(conteudo)
         return
 
     # Quebra a resposta em duas partes: Texto e JSON
     partes = conteudo.split("[GRAFICO]")
-    st.markdown(partes[0].strip())
+    texto_analise = partes[0].strip()
+    st.markdown(texto_analise)
     
     try:
         # Limpa possíveis blocos de formatação markdown
@@ -43,6 +44,44 @@ def renderizar_mensagem(conteudo):
         if not df.empty:
             df.set_index('Categoria', inplace=True)
             st.bar_chart(df)
+            
+            # ==========================================
+            # ÁREA DE AÇÕES ÁGEIS (BOTÕES)
+            # ==========================================
+            st.markdown("---")
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                # Botão 1: Baixar CSV
+                csv = df.to_csv().encode('utf-8')
+                st.download_button(
+                    label="📥 Baixar Dados (CSV)",
+                    data=csv,
+                    file_name="analise_marketsense.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+                
+            with col2:
+                # Botão 2: Dica do PPT
+                st.info("💡 Dica: Clique nos '...' no canto superior do gráfico para salvá-arlo como imagem para o PPT.")
+                
+            with col3:
+                # Botão 3: Press Release (Gera um prompt pronto)
+                if st.button("📝 Gerar Press Release", use_container_width=True):
+                    prompt_pr = f"""
+                    Aja como um Assessor de Imprensa Sênior. Transforme os dados abaixo em um press release profissional de 3 parágrafos para portais de negócios.
+                    Destaque a autoridade da nossa inteligência de mercado.
+                    
+                    DADOS DA ANÁLISE:
+                    {texto_analise}
+                    
+                    NÚMEROS EXATOS:
+                    {df.to_string()}
+                    """
+                    st.success("Copiado! Envie o texto abaixo no chat para gerar:")
+                    st.code(prompt_pr, language="markdown")
+                    
         else:
             st.warning("⚠️ O gráfico não contém dados suficientes para exibição.")
             
