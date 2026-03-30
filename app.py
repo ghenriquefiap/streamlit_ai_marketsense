@@ -2,8 +2,6 @@ import streamlit as st
 import requests
 import uuid
 import os
-import json
-import pandas as pd
 
 # ==========================================
 # CONSTANTES E CONFIGURAÇÕES GERAIS
@@ -16,77 +14,42 @@ SAUDACOES = {"olá", "ola", "oi", "bom dia", "boa tarde", "boa noite", "opa", "e
 
 st.set_page_config(page_title="AI MarketSense | Branding Contabilidade", page_icon="📊", layout="centered")
 st.title("📊 AI MarketSense")
-st.markdown("Assistente de Inteligência de Mercado para Branding com Dados Públicos da Receita Federal até Fevereiro/26")
+st.markdown("Assistente de Inteligência de Mercado para Branding com Dados Públicos da Receita Federal de Santa Catarina até Fevereiro/26")
 
 # ==========================================
 # FUNÇÕES DE LÓGICA E RENDERIZAÇÃO
 # ==========================================
 def renderizar_mensagem(conteudo):
-    """Separa o texto da IA do payload do gráfico e renderiza com botões de ação."""
-    if "[GRAFICO]" not in conteudo:
-        st.markdown(conteudo)
-        return
-
-    # Quebra a resposta em duas partes: Texto e JSON
-    partes = conteudo.split("[GRAFICO]")
-    texto_analise = partes[0].strip()
-    st.markdown(texto_analise)
+    """Renderiza a resposta da IA e adiciona botões de ação na base."""
+    # 1. Renderiza a análise textual/gráfica da IA
+    st.markdown(conteudo)
     
-    try:
-        # Limpa possíveis blocos de formatação markdown
-        json_str = partes[1].strip().replace("```json", "").replace("```", "").strip()
-        dados_grafico = json.loads(json_str)
+    # 2. Área de Ações Ágeis (Botões)
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Botão 1: Baixar Relatório Completo
+        st.download_button(
+            label="📥 Baixar Relatório (.txt)",
+            data=conteudo.encode('utf-8'),
+            file_name="relatorio_marketsense.txt",
+            mime="text/plain",
+            use_container_width=True,
+            key=f"btn_dw_{hash(conteudo)}" # Chave única para não bugar no histórico
+        )
         
-        st.subheader(dados_grafico.get("titulo", "Análise Visual"))
-        
-        # Converte para DataFrame de forma segura
-        df = pd.DataFrame(list(dados_grafico.get("dados", {}).items()), columns=['Categoria', 'Quantidade'])
-        if not df.empty:
-            df.set_index('Categoria', inplace=True)
-            st.bar_chart(df)
-            
-            # ==========================================
-            # ÁREA DE AÇÕES ÁGEIS (BOTÕES)
-            # ==========================================
-            st.markdown("---")
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                # Botão 1: Baixar CSV
-                csv = df.to_csv().encode('utf-8')
-                st.download_button(
-                    label="📥 Baixar Dados (CSV)",
-                    data=csv,
-                    file_name="analise_marketsense.csv",
-                    mime="text/csv",
-                    use_container_width=True
-                )
-                
-            with col2:
-                # Botão 2: Dica do PPT
-                st.info("💡 Dica: Clique nos '...' no canto superior do gráfico para salvá-arlo como imagem para o PPT.")
-                
-            with col3:
-                # Botão 3: Press Release (Gera um prompt pronto)
-                if st.button("📝 Gerar Press Release", use_container_width=True):
-                    prompt_pr = f"""
-                    Aja como um Assessor de Imprensa Sênior. Transforme os dados abaixo em um press release profissional de 3 parágrafos para portais de negócios.
-                    Destaque a autoridade da nossa inteligência de mercado.
-                    
-                    DADOS DA ANÁLISE:
-                    {texto_analise}
-                    
-                    NÚMEROS EXATOS:
-                    {df.to_string()}
-                    """
-                    st.success("Copiado! Envie o texto abaixo no chat para gerar:")
-                    st.code(prompt_pr, language="markdown")
-                    
-        else:
-            st.warning("⚠️ O gráfico não contém dados suficientes para exibição.")
-            
-    except json.JSONDecodeError:
-        st.caption("⚠️ A IA tentou gerar um gráfico, mas o formato estrutural falhou.")
+    with col2:
+        # Botão 2: Gerar Press Release
+        if st.button("📝 Criar Press Release", key=f"btn_pr_{hash(conteudo)}", use_container_width=True):
+            prompt_pr = f"""
+Aja como um Assessor de Imprensa Sênior. Transforme os dados da análise abaixo em um press release profissional de 3 parágrafos para portais de negócios. Destaque a autoridade da nossa inteligência de mercado.
+
+DADOS DA ANÁLISE:
+{conteudo}
+            """
+            st.success("Copiado! Envie o comando abaixo no chat para gerar:")
+            st.code(prompt_pr, language="markdown")
 
 def consultar_langflow(prompt_usuario, session_id):
     """Encapsula a chamada de rede para manter o loop principal limpo."""
@@ -113,7 +76,7 @@ if "messages" not in st.session_state:
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
 
-# Renderiza o histórico salvando o estado dos gráficos
+# Renderiza o histórico salvando o estado dos gráficos e botões
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         if message["role"] == "assistant":
