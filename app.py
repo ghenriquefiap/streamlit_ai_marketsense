@@ -6,7 +6,7 @@ import os
 # ==========================================
 # CONSTANTES E CONFIGURAÇÕES GERAIS
 # ==========================================
-LANGFLOW_API_URL = "https://gushenrique-ai-marketsense-playground.hf.space/api/v1/run/093a1edb-73c5-46a0-8c2d-d0f6f5a643dd"
+LANGFLOW_API_URL = "https://gushenrique-ai-marketsense-playground.hf.space/api/v1/run/fa0047ca-da89-4677-8d0b-3e095536ec8a"
 API_KEY = os.environ.get("LANGFLOW_API_KEY")
 
 # Usar um Set {} em vez de Lista [] deixa a busca O(1) - instantânea
