@@ -2,6 +2,9 @@ import streamlit as st
 import requests
 import uuid
 import os
+import json
+import pandas as pd
+import base64
 
 # ==========================================
 # CONSTANTES E CONFIGURAÇÕES GERAIS
@@ -13,6 +16,48 @@ API_KEY = os.environ.get("LANGFLOW_API_KEY")
 SAUDACOES = {"olá", "ola", "oi", "bom dia", "boa tarde", "boa noite", "opa", "eae", "hello"}
 
 st.set_page_config(page_title="AI MarketSense | Branding Contabilidade", page_icon="📊", layout="centered")
+
+# ==========================================
+# FUNÇÃO: INJEÇÃO DE BACKGROUND (UI/UX)
+# ==========================================
+def adicionar_fundo_tela(arquivo_imagem):
+    """Injeta CSS para colocar a imagem de fundo e ajusta a transparência dos containers."""
+    try:
+        with open(arquivo_imagem, "rb") as img_file:
+            encoded_string = base64.b64encode(img_file.read()).decode()
+            
+        css = f"""
+        <style>
+        /* Aplica a imagem no fundo geral da aplicação */
+        .stApp {{
+            background-image: url(data:image/png;base64,{encoded_string});
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        
+        /* Deixa o cabeçalho superior invisível */
+        .stApp > header {{
+            background-color: transparent;
+        }}
+        
+        /* Cria um 'vidro fumê' atrás do conteúdo principal para garantir a leitura do texto */
+        .block-container {{
+            background-color: rgba(14, 17, 23, 0.85);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 2rem;
+        }}
+        </style>
+        """
+        st.markdown(css, unsafe_allow_html=True)
+    except FileNotFoundError:
+        st.warning(f"⚠️ Imagem '{arquivo_imagem}' não encontrada na pasta. Fundo padrão ativado.")
+
+# Chama a função passando o nome do arquivo da imagem
+adicionar_fundo_tela("fundo.png")
+
 st.title("📊 AI MarketSense")
 st.markdown("Assistente de Inteligência de Mercado para Branding com Dados Públicos da Receita Federal de Santa Catarina até Fevereiro/26")
 
