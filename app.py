@@ -19,15 +19,15 @@ st.set_page_config(page_title="AI MarketSense | Branding Contabilidade", page_ic
 # ==========================================
 # UI: BANNER DE CABEÇALHO
 # ==========================================
-# Exibe a imagem no topo como um banner, ocupando a largura do container
 try:
     st.image("fundo.png", use_container_width=True)
+    # Reintroduzindo o texto técnico como uma legenda centralizada e elegante
+    st.markdown("<p style='text-align: center; color: #a0aab2; font-size: 0.9em; margin-top: -10px;'>Assistente de Inteligência de Mercado para Branding com Dados Públicos da Receita Federal de SC até Fevereiro/26</p>", unsafe_allow_html=True)
 except FileNotFoundError:
-    # Se a imagem não for encontrada, mostra o título em texto como plano B
     st.title("📊 AI MarketSense")
-    st.markdown("Assistente de Inteligência de Mercado para Branding com Dados Públicos da Receita Federal")
+    st.markdown("Assistente de Inteligência de Mercado para Branding com Dados Públicos da Receita Federal de Santa Catarina até Fevereiro/26")
 
-st.markdown("---") # Linha divisória sutil para separar o banner do chat
+st.markdown("---")
 
 # ==========================================
 # FUNÇÕES DE LÓGICA E RENDERIZAÇÃO
