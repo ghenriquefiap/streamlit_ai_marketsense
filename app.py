@@ -8,7 +8,7 @@ import pandas as pd
 # ==========================================
 # CONSTANTES E CONFIGURAÇÕES GERAIS
 # ==========================================
-LANGFLOW_API_URL = "https://gushenrique-ai-marketsense-playground.hf.space/api/v1/run/f34e7115-2a16-417e-b24f-6f13fe058e89"
+LANGFLOW_API_URL = "https://gushenrique-ai-marketsense-playground.hf.space/api/v1/run/d256921a-d3fd-4d57-a7bf-b8068306f397"
 API_KEY = os.environ.get("LANGFLOW_API_KEY")
 
 SAUDACOES = {"olá", "ola", "oi", "bom dia", "boa tarde", "boa noite", "opa", "eae", "hello"}
